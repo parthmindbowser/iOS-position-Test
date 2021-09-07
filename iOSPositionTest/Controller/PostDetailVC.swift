@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class PostDetailVC: UIViewController {
     
@@ -16,10 +18,15 @@ class PostDetailVC: UIViewController {
     @IBOutlet var lblPostBody: UILabel!
     
     //MARK:- Variables
-    private var arrUsers = [UsersModel]()
-    private var arrComments = [CommentsModel]()
     var objPost:PostsModel?
-    var objUser:UsersModel?
+    
+    private var objUser:UsersModel?
+    private let usersViewModelInstance = UsersViewModel()
+    private let userList = BehaviorRelay<[UsersModel]>(value: [])
+    private let commentViewModelInstance = CommentsViewModel()
+    private let commentList = BehaviorRelay<[CommentsModel]>(value: [])
+    
+    private let disposeBag = DisposeBag()
     
     //MARK:- Page Lifecycle
     override func viewDidLoad() {
@@ -27,53 +34,61 @@ class PostDetailVC: UIViewController {
         
         // Do any additional setup after loading the view.
         
-        self.initialConfig()
-    }
-    
-    //MARK:- Private Methods
-    private func initialConfig() {
-        
         if let isApplaunched = UserDefaultHelper.getBoolPREF(Constant.Keys.kApplaunchedFirstTime), !isApplaunched { ///Load data from offline Db from second onwards
-            self.getUserListFromServer()
+            
+            self.commentViewModelInstance.fetchCommentList()
+            self.usersViewModelInstance.fetchUserList()
+            
+            self.bindUsersData()
+            self.bindCommentData()
+            
+            self.onSetDetails()
         } else {
             self.getPostDetailsFromOffline()
         }
     }
     
-    private func onSetUserDetails() {
+    //MARK:- Private Methods
+    private func bindUsersData() {
+        
+        usersViewModelInstance.userViewModelObserver.subscribe(onNext: { (value) in
+            
+            self.objUser = value.first(where: {$0.id == self.objPost?.userId})
+            self.userList.accept(value)
+            UserDefaultHelper.setBoolPREF(true, key: Constant.Keys.kApplaunchedFirstTime)
+            
+            DispatchQueue.main.async {
+                self.lblUserName.text = self.objUser?.name
+            }
+        },onError: { error in
+            print(error)
+        }).disposed(by: self.disposeBag)
+    }
+    
+    private func bindCommentData() {
+        
+        commentViewModelInstance.commentViewModelObserver.subscribe(onNext: { (value) in
+            
+            self.commentList.accept(value.filter({$0.postId == self.objPost?.id}))
+        },onError: { error in
+            print(error)
+        }).disposed(by: self.disposeBag)
+        
+        self.tableView.tableFooterView = UIView()
+        
+        commentList.asObservable().bind(to: tableView.rx.items(cellIdentifier: "CommentListCell", cellType: CommentListCell.self)) { row, objData, cell in
+            
+            cell.lblUserName.text = objData.name
+            cell.lblEmail.text = objData.email
+            cell.lblComment.text = objData.body
+            
+        }.disposed(by: disposeBag)
+    }
+    
+    private func onSetDetails() {
         
         self.lblPostTitle.text = self.objPost?.title
         self.lblPostBody.text = self.objPost?.body
-        
-        if let userId = self.objPost?.userId {
-            OfflineDataManager.getUserDetailById(idIs: userId) { obj in
-                self.objUser = obj
-                self.lblUserName.text = obj?.name
-            }
-        }
-    }
-    
-    private func getUserListFromServer() {
-        
-        UsersViewModel.getUsersFromServer { arr in
-            if let _ = arr {
-                self.arrUsers = arr!
-                self.onSetUserDetails()
-            }
-            
-            DispatchQueue.main.async {
-                CommentsViewModel.getCommentsFromServer { arr in
-                    if let _ = arr {
-                        UserDefaultHelper.setBoolPREF(true, key: Constant.Keys.kApplaunchedFirstTime)
-                        
-                        DispatchQueue.main.async {
-                            self.arrComments = arr?.filter({$0.postId == self.objPost?.id}) ?? []
-                            self.tableView.reloadData()
-                        }
-                    }
-                }
-            }
-        }
     }
     
     private func getPostDetailsFromOffline() {
@@ -82,33 +97,30 @@ class PostDetailVC: UIViewController {
             OfflineDataManager.getPostCommentsById(postId: postId) { arrData in
                 
                 DispatchQueue.main.async {
-                    self.arrComments = arrData
-                    self.onSetUserDetails()
+                    self.commentList.accept(arrData.filter({$0.postId == self.objPost?.id}))
+                    
+                    self.tableView.tableFooterView = UIView()
+                    
+                    self.commentList.asObservable().bind(to: self.tableView.rx.items(cellIdentifier: "CommentListCell", cellType: CommentListCell.self)) { row, objData, cell in
+                        
+                        cell.lblUserName.text = objData.name
+                        cell.lblEmail.text = objData.email
+                        cell.lblComment.text = objData.body
+                        
+                    }.disposed(by: self.disposeBag)
+                    
                     self.tableView.reloadData()
+                    
+                    if let userId = self.objPost?.userId {
+                        OfflineDataManager.getUserDetailById(idIs: userId) { obj in
+                            self.objUser = obj
+                            self.lblUserName.text = self.objUser?.name
+                        }
+                    }
+                    self.onSetDetails()
                 }
             }
         }
     }
 }
 
-//MARK:- UITableView Delegate & DataSource
-extension PostDetailVC: UITableViewDelegate, UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.arrComments.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentListCell", for: indexPath) as? CommentListCell else {
-            return UITableViewCell()
-        }
-        let objData = self.arrComments[indexPath.row]
-        
-        cell.lblUserName.text = objData.name
-        cell.lblEmail.text = objData.email
-        cell.lblComment.text = objData.body
-        
-        return cell
-    }
-}

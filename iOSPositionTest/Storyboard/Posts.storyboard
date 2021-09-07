@@ -67,10 +67,6 @@
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
-                                <connections>
-                                    <outlet property="dataSource" destination="Y6W-OH-hqX" id="KW8-sl-e0y"/>
-                                    <outlet property="delegate" destination="Y6W-OH-hqX" id="Qpf-2z-nev"/>
-                                </connections>
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
@@ -192,10 +188,6 @@
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
-                                <connections>
-                                    <outlet property="dataSource" destination="Lwn-Bu-GFf" id="9o7-Ox-NmC"/>
-                                    <outlet property="delegate" destination="Lwn-Bu-GFf" id="TwV-Ng-bXp"/>
-                                </connections>
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="iRj-NK-wq2"/>

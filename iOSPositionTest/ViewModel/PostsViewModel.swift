@@ -6,32 +6,38 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
-class PostsViewModel: NSObject {
-
-    //MARK: Call API Get Post lIst From the Endpoint.
-    class func getPostLists(success withResponse: @escaping ([PostsModel]?) -> ()) {
-        
-        APIManager.makeRequest(Constant.serverAPI.URL.kPosts, withRequest: nil, withSuccess: { (response) in
+class PostsViewModel {
+    
+    let request = APIRequest()
+    var posts: Observable<[PostsModel]>?
+    private let postsViewModel = BehaviorRelay<[PostsModel]>(value: [])
+    var postViewModelObserver: Observable<[PostsModel]> {
+        return postsViewModel.asObservable()
+    }
+    
+    private let disposeBag = DisposeBag()
+    
+    func fetchPostsList() {
+        posts = request.callAPIForPosts()
+        posts?.subscribe(onNext: { (value) in
             
-            var arrPost = [PostsModel]()
+            ///Delete old data and replace with new.
+            OfflineDataManager.truncateTable(Constant.TblEntities.kTblPosts)
             
-            if let arrData = response {
+            for (_, dict) in value.enumerated() {
                 
-                ///Delete old data and replace with new.
-                OfflineDataManager.truncateTable(Constant.TblEntities.kTblPosts)
-                
-                for (_, dict) in arrData.enumerated() {
-                    let obj = PostsModel.init(dict)
-                    arrPost.append(obj)
-                    
-                    //Insert Posts data in Offline.
-                    OfflineDataManager.insertDatainTblPost(objPostIs: obj)
-                }
-                withResponse(arrPost)
+                OfflineDataManager.insertDatainTblPost(objPostIs: dict)
             }
-        }, failure: { (error) in
-            print(error)
-        })
+            self.postsViewModel.accept(value)
+            
+        }, onError: { (error) in
+            _ = self.postsViewModel.catch { (error) in
+                Observable.empty()
+            }
+            print("\(#function) \(error.localizedDescription)")
+        }).disposed(by: disposeBag)
     }
 }

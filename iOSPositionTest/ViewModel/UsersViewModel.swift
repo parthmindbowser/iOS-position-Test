@@ -6,31 +6,41 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class UsersViewModel {
     
-    //MARK: Call API Get User lIst From the Endpoint.
-    class func getUsersFromServer(success withResponse: @escaping ([UsersModel]?) -> ()) {
+    let request = APIRequest()
+    var users: Observable<[UsersModel]>?
+    private let userViewModel = BehaviorRelay<[UsersModel]>(value: [])
+    var userViewModelObserver: Observable<[UsersModel]> {
+        return userViewModel.asObservable()
+    }
+    
+    private let disposeBag = DisposeBag()
+    
+    func fetchUserList() {
         
-        APIManager.makeRequest(Constant.serverAPI.URL.kUsers, withRequest: nil, withSuccess: { (response) in
+        users = request.callAPIForUsers()
+        users?.subscribe(onNext: { (value) in
             
-            var arrUser = [UsersModel]()
+            ///Delete old data and replace with new.
+            OfflineDataManager.truncateTable(Constant.TblEntities.kTblUsers)
             
-            if let arrData = response {
-                ///Delete old data and replace with new.
-                OfflineDataManager.truncateTable(Constant.TblEntities.kTblUsers)
+            for (_, dict) in value.enumerated() {
                 
-                for (_, dict) in arrData.enumerated() {
-                    let obj = UsersModel.init(dict)
-                    arrUser.append(obj)
-                    
-                    //Insert Users data in Offline.
-                    OfflineDataManager.insertDatainTblUser(objUserIs: obj)
-                }
-                withResponse(arrUser)
+                //Insert Users data in Offline.
+                OfflineDataManager.insertDatainTblUser(objUserIs: dict)
             }
-        }, failure: { (error) in
-            print(error)
-        })
+            
+            self.userViewModel.accept(value)
+            
+        }, onError: { (error) in
+            _ = self.userViewModel.catch { (error) in
+                Observable.empty()
+            }
+            print("\(#function) \(error.localizedDescription)")
+        }).disposed(by: disposeBag)
     }
 }

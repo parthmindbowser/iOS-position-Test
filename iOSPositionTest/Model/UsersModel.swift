@@ -7,38 +7,38 @@
 
 import UIKit
 
-class UsersModel {
+import Foundation
+
+struct UsersModel : Codable {
     
-    var id: Int
-    var name: String
-    var username: String
-    var email: String
-    ///Address
-    var street: String?
-    var suite: String?
-    var city: String?
-    var zipcode: String?
-    ///Geo
-    var lat: String?
-    var lng: String?
-    var arrUserComments = [CommentsModel]()
+    var id : Int?
+    var name : String?
+    var username : String?
+    var email : String?
+    var address : Address?
+    var phone : String?
+    var website : String?
+    var company : Company?
+}
+
+struct Company : Codable {
     
-    init(_ dict: [String : Any]) {
-        
-        self.id = dict["id"] as? Int ?? 0
-        self.name = dict["name"] as? String ?? ""
-        self.username = dict["username"] as? String ?? ""
-        self.email = dict["email"] as? String ?? ""
-        
-        if let dictAddress = dict["address"] as? [String: Any] {
-            self.street = dictAddress["street"] as? String ?? ""
-            self.suite = dictAddress["suite"] as? String ?? ""
-            self.city = dictAddress["city"] as? String ?? ""
-            self.zipcode = dictAddress["zipcode"] as? String ?? ""
-        }
-        if let dictGeo = dict["geo"] as? [String: Any] {
-            self.lat = dictGeo["lat"] as? String ?? ""
-            self.lng = dictGeo["lng"] as? String ?? ""
-        }
-    }
+    let name : String?
+    let catchPhrase : String?
+    let bs : String?
+}
+
+struct Geo : Codable {
+    
+    let lat : String?
+    let lng : String?
+}
+
+struct Address : Codable {
+    
+    let street : String?
+    let suite : String?
+    let city : String?
+    let zipcode : String?
+    let geo : Geo?
 }

@@ -6,6 +6,9 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+import CoreData
 
 class PostListVC: UIViewController {
     
@@ -14,30 +17,56 @@ class PostListVC: UIViewController {
     
     //MARK:- Variables
     private var arrPosts = [PostsModel]()
+    private let disposeBag = DisposeBag()
+    
+    let postsViewModelInstance = PostsViewModel()
+    let postList = BehaviorRelay<[PostsModel]>(value: [])
+    var detailController: PostDetailVC?
     
     //MARK:- Page Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        
-        self.initialConfig()
-    }
-    
-    //MARK:- Private Methods
-    private func initialConfig() {
-        
         self.checkAndgetPostsFromOffline()
     }
     
-    private func getPostsFromServer() {
+    //MARK:- Private Methods
+    private func bindUI(isUpdateData:Bool = true) {
         
-        PostsViewModel.getPostLists { arrData in
-            if let _ = arrData {
-                self.arrPosts = arrData!
-                self.tblPosts.reloadData()
+        //Here we subscribe the subject in viewModel to get the value here
+        postsViewModelInstance.postViewModelObserver.subscribe(onNext: { (value) in
+            
+            if isUpdateData {
+                self.postList.accept(value)
             }
-        }
+        },onError: { error in
+            print(error)
+        }).disposed(by: self.disposeBag)
+        
+        tblPosts.tableFooterView = UIView()
+        
+        //This binds the table datasource with tableview and also connects the cell to it.
+        postList.asObservable().bind(to: tblPosts.rx.items(cellIdentifier: "PostListCell", cellType: PostListCell.self)) { row, model, cell in
+            
+            cell.lblPostTitle.text = model.title
+            cell.lblPostBody.text = model.body
+            cell.lblUser.text = ""
+            
+        }.disposed(by: disposeBag)
+        
+        self.tblPosts.reloadData()
+        
+        //Replacement to didSelectRowAt() of tableview delegate functions
+        tblPosts.rx.itemSelected.subscribe(onNext: { (indexPath) in
+            
+            self.tblPosts.deselectRow(at: indexPath, animated: true)
+            
+            let objVC = AppStoryboard.Posts.getVC(viewController: PostDetailVC.self)
+            objVC.objPost = self.postList.value[indexPath.row]
+            self.navigationController?.pushViewController(objVC, animated: true)
+            
+        }).disposed(by: self.disposeBag)
     }
     
     private func checkAndgetPostsFromOffline() {
@@ -47,43 +76,17 @@ class PostListVC: UIViewController {
             if arr.count == 0 { //It means first launch. then Get from server
                 
                 DispatchQueue.main.async {
-                    self.getPostsFromServer()
+                    self.postsViewModelInstance.fetchPostsList()
+                    self.bindUI()
                 }
             } else {
+                
                 DispatchQueue.main.async {
-                    self.arrPosts = arr
-                    self.tblPosts.reloadData()
+                    self.postList.accept(arr)
+                    self.bindUI(isUpdateData: false)
                 }
             }
         }
     }
 }
 
-//MARK:- UITableView Delegate & DataSource
-extension PostListVC: UITableViewDelegate, UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.arrPosts.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "PostListCell", for: indexPath) as? PostListCell else {
-            return UITableViewCell()
-        }
-        let objData = self.arrPosts[indexPath.row]
-        
-        cell.lblPostTitle.text = objData.title
-        cell.lblPostBody.text = objData.body
-        cell.lblUser.text = ""
-        
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        let objPostDetailVC = AppStoryboard.Posts.getVC(viewController: PostDetailVC.self)
-        objPostDetailVC.objPost = self.arrPosts[indexPath.row]
-        self.navigationController?.pushViewController(objPostDetailVC, animated: true)
-    }
-}

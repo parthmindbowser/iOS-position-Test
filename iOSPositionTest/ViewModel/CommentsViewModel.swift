@@ -6,31 +6,40 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class CommentsViewModel {
     
-    //MARK: Call API Get Comments lIst From the Endpoint.
-    class func getCommentsFromServer(success withResponse: @escaping ([CommentsModel]?) -> ()) {
+    let request = APIRequest()
+    var comments: Observable<[CommentsModel]>?
+    private let commentViewModel = BehaviorRelay<[CommentsModel]>(value: [])
+    var commentViewModelObserver: Observable<[CommentsModel]> {
+        return commentViewModel.asObservable()
+    }
+    
+    private let disposeBag = DisposeBag()
+    
+    func fetchCommentList() {
         
-        APIManager.makeRequest(Constant.serverAPI.URL.kComments, withRequest: nil, withSuccess: { (response) in
+        comments = request.callAPIForComments()
+        comments?.subscribe(onNext: { (value) in
             
-            var arrComment = [CommentsModel]()
+            ///Delete old data and replace with new.
+            OfflineDataManager.truncateTable(Constant.TblEntities.kTblComments)
             
-            if let arrData = response {
-                ///Delete old data and replace with new.
-                OfflineDataManager.truncateTable(Constant.TblEntities.kTblComments)
-                
-                for (_, dict) in arrData.enumerated() {
-                    let obj = CommentsModel.init(dict)
-                    arrComment.append(obj)
-                    
-                    //Insert Comment data in Offline.
-                    OfflineDataManager.insertDatainTblComment(objCommentIs: obj)
-                }
-                withResponse(arrComment)
+            for (_, dict) in value.enumerated() {
+              
+                //Insert Comment data in Offline.
+                OfflineDataManager.insertDatainTblComment(objCommentIs: dict)
             }
-        }, failure: { (error) in
-            print(error)
-        })
+            self.commentViewModel.accept(value)
+            
+        }, onError: { (error) in
+            _ = self.commentViewModel.catch { (error) in
+                Observable.empty()
+            }
+            print("\(#function) \(error.localizedDescription)")
+        }).disposed(by: disposeBag)
     }
 }

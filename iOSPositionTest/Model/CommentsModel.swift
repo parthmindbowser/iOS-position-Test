@@ -7,20 +7,11 @@
 
 import UIKit
 
-class CommentsModel {
+struct CommentsModel : Codable {
     
-    var postId: Int
-    var id: Int
-    var name: String
-    var body: String
-    var email: String
-    
-    init(_ dict: [String : Any]) {
-        
-        self.postId = dict["postId"] as? Int ?? 0
-        self.id = dict["id"] as? Int ?? 0
-        self.name = dict["name"] as? String ?? ""
-        self.body = dict["body"] as? String ?? ""
-        self.email = dict["email"] as? String ?? ""
-    }
+    var postId : Int?
+    var id : Int?
+    var name : String?
+    var email : String?
+    var body : String?
 }

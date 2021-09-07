@@ -16,8 +16,6 @@
 		6D55C38326E20CAB00D28C2A /* PostsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D55C38226E20CAB00D28C2A /* PostsViewModel.swift */; };
 		6D55C38526E20CB800D28C2A /* UsersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D55C38426E20CB800D28C2A /* UsersViewModel.swift */; };
 		6D55C38726E20CC500D28C2A /* CommentsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D55C38626E20CC500D28C2A /* CommentsViewModel.swift */; };
-		6D55C38926E20D0500D28C2A /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D55C38826E20D0500D28C2A /* APIManager.swift */; };
-		6D55C38B26E2263900D28C2A /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D55C38A26E2263900D28C2A /* Utilities.swift */; };
 		6D55C38D26E239ED00D28C2A /* UserDefaultHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D55C38C26E239ED00D28C2A /* UserDefaultHelper.swift */; };
 		6D94841326E0D39F00BAF836 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D94841226E0D39F00BAF836 /* AppDelegate.swift */; };
 		6D94841D26E0D39F00BAF836 /* iOSPositionTest.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6D94841B26E0D39F00BAF836 /* iOSPositionTest.xcdatamodeld */; };
@@ -33,6 +31,8 @@
 		6D94846826E0DA0B00BAF836 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D94846626E0DA0B00BAF836 /* Extension.swift */; };
 		6D94846C26E0DAD500BAF836 /* PostListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D94846B26E0DAD500BAF836 /* PostListCell.swift */; };
 		6D9CC0CF26E243BA00A8E2BD /* CommentListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D9CC0CE26E243BA00A8E2BD /* CommentListCell.swift */; };
+		6DD3A2F826E770DE0038CE47 /* APIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD3A2F726E770DE0038CE47 /* APIRequest.swift */; };
+		6DD3A2FE26E79F070038CE47 /* PostDataTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD3A2FD26E79F070038CE47 /* PostDataTestCase.swift */; };
 		8EA2F3288A08BC1593D35ACD /* Pods_iOSPositionTestTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D989672A7A9FA18AC7CBD44 /* Pods_iOSPositionTestTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -65,8 +65,6 @@
 		6D55C38226E20CAB00D28C2A /* PostsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsViewModel.swift; sourceTree = "<group>"; };
 		6D55C38426E20CB800D28C2A /* UsersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersViewModel.swift; sourceTree = "<group>"; };
 		6D55C38626E20CC500D28C2A /* CommentsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsViewModel.swift; sourceTree = "<group>"; };
-		6D55C38826E20D0500D28C2A /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
-		6D55C38A26E2263900D28C2A /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		6D55C38C26E239ED00D28C2A /* UserDefaultHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultHelper.swift; sourceTree = "<group>"; };
 		6D94840F26E0D39F00BAF836 /* iOSPositionTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOSPositionTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D94841226E0D39F00BAF836 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -88,6 +86,8 @@
 		6D94846626E0DA0B00BAF836 /* Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		6D94846B26E0DAD500BAF836 /* PostListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListCell.swift; sourceTree = "<group>"; };
 		6D9CC0CE26E243BA00A8E2BD /* CommentListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentListCell.swift; sourceTree = "<group>"; };
+		6DD3A2F726E770DE0038CE47 /* APIRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIRequest.swift; sourceTree = "<group>"; };
+		6DD3A2FD26E79F070038CE47 /* PostDataTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDataTestCase.swift; sourceTree = "<group>"; };
 		7D989672A7A9FA18AC7CBD44 /* Pods_iOSPositionTestTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iOSPositionTestTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		91EA747D2E3C463090BFDF8D /* Pods-iOSPositionTest-iOSPositionTestUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOSPositionTest-iOSPositionTestUITests.release.xcconfig"; path = "Target Support Files/Pods-iOSPositionTest-iOSPositionTestUITests/Pods-iOSPositionTest-iOSPositionTestUITests.release.xcconfig"; sourceTree = "<group>"; };
 		9577588B3DE38AF926950028 /* Pods-iOSPositionTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOSPositionTestTests.release.xcconfig"; path = "Target Support Files/Pods-iOSPositionTestTests/Pods-iOSPositionTestTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -193,6 +193,7 @@
 			isa = PBXGroup;
 			children = (
 				6D94842C26E0D39F00BAF836 /* iOSPositionTestTests.swift */,
+				6DD3A2FD26E79F070038CE47 /* PostDataTestCase.swift */,
 				6D94842E26E0D3A000BAF836 /* Info.plist */,
 			);
 			path = iOSPositionTestTests;
@@ -218,8 +219,7 @@
 		6D94845226E0D40F00BAF836 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				6D55C38A26E2263900D28C2A /* Utilities.swift */,
-				6D55C38826E20D0500D28C2A /* APIManager.swift */,
+				6DD3A2F726E770DE0038CE47 /* APIRequest.swift */,
 				6D55C38C26E239ED00D28C2A /* UserDefaultHelper.swift */,
 			);
 			path = Utilities;
@@ -542,7 +542,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6D55C38926E20D0500D28C2A /* APIManager.swift in Sources */,
 				6D55C38726E20CC500D28C2A /* CommentsViewModel.swift in Sources */,
 				6D94841D26E0D39F00BAF836 /* iOSPositionTest.xcdatamodeld in Sources */,
 				6D55C38526E20CB800D28C2A /* UsersViewModel.swift in Sources */,
@@ -553,13 +552,13 @@
 				6D55C38126E20C4600D28C2A /* UsersModel.swift in Sources */,
 				6D55C37F26E20C3D00D28C2A /* CommentsModel.swift in Sources */,
 				6D55C38D26E239ED00D28C2A /* UserDefaultHelper.swift in Sources */,
-				6D55C38B26E2263900D28C2A /* Utilities.swift in Sources */,
 				6D94846326E0D8EC00BAF836 /* Enum + Identifiers.swift in Sources */,
 				6D94845C26E0D86200BAF836 /* PostListVC.swift in Sources */,
 				6D94845E26E0D87500BAF836 /* PostDetailVC.swift in Sources */,
 				6D55C37D26E20C2B00D28C2A /* PostsModel.swift in Sources */,
 				6D94846826E0DA0B00BAF836 /* Extension.swift in Sources */,
 				6D94846C26E0DAD500BAF836 /* PostListCell.swift in Sources */,
+				6DD3A2F826E770DE0038CE47 /* APIRequest.swift in Sources */,
 				6D9CC0CF26E243BA00A8E2BD /* CommentListCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -569,6 +568,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6D94842D26E0D39F00BAF836 /* iOSPositionTestTests.swift in Sources */,
+				6DD3A2FE26E79F070038CE47 /* PostDataTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

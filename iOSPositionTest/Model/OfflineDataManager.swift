@@ -55,13 +55,16 @@ class TblComments: NSManagedObject {
 
 class OfflineDataManager: NSObject {
     
+    static let shared = OfflineDataManager()
+    
+    //MARK:- Save Posts List in CoreData
     class func insertDatainTblPost(objPostIs: PostsModel) {
         
         let context = AppDelegate.appDelegate().managedObjectContext
         if let objPost = NSEntityDescription.insertNewObject(forEntityName: Constant.TblEntities.kTblPosts, into: context) as? TblPosts {
             
-            objPost.userId = Int32(objPostIs.userId)
-            objPost.id = Int32(objPostIs.id)
+            objPost.userId = Int32(objPostIs.userId ?? 0)
+            objPost.id = Int32(objPostIs.id ?? 0)
             objPost.title = objPostIs.title
             objPost.body = objPostIs.body
             
@@ -73,23 +76,16 @@ class OfflineDataManager: NSObject {
         }
     }
     
+    //MARK:- Save Users List in CoreData
     class func insertDatainTblUser(objUserIs: UsersModel) {
         
         let context = AppDelegate.appDelegate().managedObjectContext
         if let objUser = NSEntityDescription.insertNewObject(forEntityName: Constant.TblEntities.kTblUsers, into: context) as? TblUsers {
             
-            objUser.id = Int32(objUserIs.id)
+            objUser.id = Int32(objUserIs.id ?? 0)
             objUser.name = objUserIs.name
             objUser.username = objUserIs.username
             objUser.email = objUserIs.email
-            
-            objUser.street = objUserIs.street
-            objUser.suite = objUserIs.suite
-            objUser.city = objUserIs.city
-            objUser.zipcode = objUserIs.zipcode
-            
-            objUser.lat = objUserIs.lat
-            objUser.lng = objUserIs.lng
             
             do {
                 try context.save()
@@ -99,16 +95,17 @@ class OfflineDataManager: NSObject {
         }
     }
     
+    //MARK:- Save Comments List in CoreData
     class func insertDatainTblComment(objCommentIs: CommentsModel) {
         
         let context = AppDelegate.appDelegate().managedObjectContext
         if let objComment = NSEntityDescription.insertNewObject(forEntityName: Constant.TblEntities.kTblComments, into: context) as? TblComments {
             
-            objComment.postId = Int32(objCommentIs.postId)
-            objComment.id = Int32(objCommentIs.id)
-            objComment.name = objCommentIs.name
-            objComment.email = objCommentIs.email
-            objComment.body = objCommentIs.body
+            objComment.postId = Int32(objCommentIs.postId ?? 0)
+            objComment.id = Int32(objCommentIs.id ?? 0)
+            objComment.name = objCommentIs.name ?? ""
+            objComment.email = objCommentIs.email ?? ""
+            objComment.body = objCommentIs.body ?? ""
             
             do {
                 try context.save()
@@ -118,6 +115,7 @@ class OfflineDataManager: NSObject {
         }
     }
     
+    //MARK:- Retrive Post from the Offline
     class func getAllPostsOffline(withResponse: (_ arr: [PostsModel])->()) {
         
         var arrData = [PostsModel]()
@@ -129,7 +127,7 @@ class OfflineDataManager: NSObject {
             let fetchResults = try context.fetch(fetchRequest)
             for obj in fetchResults {
                 
-                let objPost = PostsModel([:])
+                var objPost = PostsModel.init()
                 
                 objPost.userId = Int(obj.userId)
                 objPost.id = Int(obj.id)
@@ -145,6 +143,7 @@ class OfflineDataManager: NSObject {
         }
     }
     
+    //MARK:- Retrive User Detail From the Offline
     class func getUserDetailById(idIs: Int, withResponse: (_ objUser: UsersModel?)->()) {
         
         let context = AppDelegate.appDelegate().managedObjectContext
@@ -158,12 +157,11 @@ class OfflineDataManager: NSObject {
             let fetchResults = try context.fetch(fetchRequest)
             if let obj = fetchResults.first{
                 
-                let objUser = UsersModel([:])
+                var objUser = UsersModel.init()
                 
                 objUser.id = Int(obj.id)
                 objUser.name = obj.name ?? ""
                 objUser.username = obj.username ?? ""
-                objUser.city = obj.city ?? ""
                 objUser.email = obj.email ?? ""
                 
                 withResponse(objUser)
@@ -174,6 +172,7 @@ class OfflineDataManager: NSObject {
         }
     }
     
+    //MARK:- Retrive Post Details From the Offline
     class func getPostCommentsById(postId:Int, withResponse: (_ arr: [CommentsModel])->()) {
         
         var arrData = [CommentsModel]()
@@ -187,14 +186,14 @@ class OfflineDataManager: NSObject {
             let fetchResults = try context.fetch(fetchRequest)
             for obj in fetchResults {
                 
-                let objComment = CommentsModel([:])
+                var objComment = CommentsModel.init()
                 
                 objComment.postId = Int(obj.postId)
                 objComment.id = Int(obj.id)
                 objComment.body = obj.body ?? ""
                 objComment.email = obj.email ?? ""
                 objComment.name = obj.name ?? ""
-               
+                
                 arrData.append(objComment)
             }
             
@@ -205,7 +204,7 @@ class OfflineDataManager: NSObject {
         }
     }
     
-    ///Truncate tbl by passing table name
+    //MARK:- Truncate Table 
     class func truncateTable(_ tblName: String) {
         
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
